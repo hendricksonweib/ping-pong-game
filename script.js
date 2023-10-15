@@ -51,8 +51,14 @@ const rightPaddle ={
     }
 }
 const score ={
-    human:1,
-    computer:2,
+    human:0,
+    computer:0,
+    increaseHuman :function(){
+        this.human++
+    },
+    increaseComputer :function(){
+        this.computer++
+    },
     draw: function(){
         canvasCtx.font = "bold 72px Arial"
         canvasCtx.textAlign = "center"
@@ -68,20 +74,45 @@ const ball = {
     y:200,
     r:20,
     speed:5,
-    directionX: 1,""
+    directionX: 1,
     directionY: 1,
     _calcPosition: function(){
+        // verificar se o jogador 1 fez o ponto
+        if(this.x > field.w - this.r - rightPaddle.w - gapX){
+            if(this.y + this.r > rightPaddle.y && this.y - this.r < rightPaddle.y + rightPaddle.h){
+                this._reverseX()
+            } else {
+                score.increaseHuman()
+                this._pointUp()
+            }
+        }
+        // verificar se o jogador 2 fez o 
+        if(this.x < this.r + leftPaddle.w + gapX) {
+            if(this.y + this.r > leftPaddle.y && this.y - this.r< leftPaddle.y + leftPaddle.h){
+                this._reverseX()
+            }else{
+                score.increaseComputer()
+                this._pointUp()
+            }
+        }
         if (
             (this.y - this.r< 0 && this.directionY < 0) ||
-            (this.y > field.h - this.r && this.directionY > 0)
-        ) { this._reverseY()
+            (this.y - this.r> field.h - this.r && this.directionY > 0)
+        ) { 
+            this._reverseY()
         }
+     
+       
     },
     _reverseX:function(){
         this.directionX *=  -1
     },
     _reverseY:function(){
         this.directionY *=  -1
+    },
+    _pointUp: function(){
+        this.x = field.w /2
+        this.y = field.h /2
     },
     _move: function(){
         this.x += this.directionX * this.speed
